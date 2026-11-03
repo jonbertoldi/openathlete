@@ -164,7 +164,13 @@ services:
 
   # Web app, forwarding /api and /socket.io to the API
   web:
-    image: ghcr.io/openathleteorg/openathlete-web:${OPENATHLETE_VERSION:-1}
+    # This fork carries instance-specific pages and must build its web image
+    # from the checked-out source. The API continues to use the published
+    # OpenAthlete image above.
+    image: openathlete-web:${OPENATHLETE_VERSION:-local}
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
     environment:
       # Leave empty: the app calls the API through /api. Only set it to serve
       # the API from another address.
