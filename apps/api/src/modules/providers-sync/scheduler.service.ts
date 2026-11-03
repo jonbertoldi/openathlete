@@ -13,8 +13,8 @@ import { PrismaService } from '../prisma/services/prisma.service';
 import { ProviderRateLimitError } from './errors/provider-rate-limit.error';
 import { ProviderExportService } from './export.service';
 
-type ProviderKey = 'garmin' | 'suunto' | 'coros';
-type ProviderEnum = 'GARMIN' | 'SUUNTO' | 'COROS';
+type ProviderKey = 'garmin' | 'suunto' | 'coros' | 'intervals';
+type ProviderEnum = 'GARMIN' | 'SUUNTO' | 'COROS' | 'INTERVALS';
 
 function providerEnumToKey(provider: string): ProviderKey | null {
   switch (provider) {
@@ -24,6 +24,8 @@ function providerEnumToKey(provider: string): ProviderKey | null {
       return 'suunto';
     case 'COROS':
       return 'coros';
+    case 'INTERVALS':
+      return 'intervals';
     default:
       return null;
   }
@@ -37,6 +39,8 @@ function providerKeyToEnum(provider: ProviderKey): ProviderEnum {
       return 'SUUNTO';
     case 'coros':
       return 'COROS';
+    case 'intervals':
+      return 'INTERVALS';
   }
 }
 
@@ -81,7 +85,7 @@ export class ProviderExportScheduler {
     // Get all athletes with active provider accounts (or specific athlete if provided)
     const providerAccounts = await this.prisma.providerAccount.findMany({
       where: {
-        provider: { in: ['GARMIN', 'SUUNTO', 'COROS'] },
+        provider: { in: ['GARMIN', 'SUUNTO', 'COROS', 'INTERVALS'] },
         status: 'active',
         exportWorkoutsEnabled: true,
         ...(athleteId && { athleteId: athleteId }),
@@ -95,7 +99,7 @@ export class ProviderExportScheduler {
     // Group by athlete
     const athletesByProvider = new Map<
       number,
-      Set<'garmin' | 'suunto' | 'coros'>
+      Set<'garmin' | 'suunto' | 'coros' | 'intervals'>
     >();
 
     for (const account of providerAccounts) {

@@ -61,6 +61,12 @@ const providerSpecificCapabilities: Partial<
     importMetrics: true,
     supportsFullImport: false,
   },
+  INTERVALS: {
+    importActivities: true,
+    exportWorkouts: true,
+    importMetrics: false,
+    supportsFullImport: true,
+  },
 };
 
 /** COROS keeps each account in one region, each with its own server */

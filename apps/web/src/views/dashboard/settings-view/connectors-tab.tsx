@@ -58,6 +58,7 @@ const SUPPORTED_PROVIDERS: ConnectorProvider[] = [
   'SUUNTO',
   'POLAR',
   'COROS',
+  'INTERVALS',
 ];
 
 export function ConnectorsTab() {

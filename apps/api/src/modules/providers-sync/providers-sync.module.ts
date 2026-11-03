@@ -7,12 +7,14 @@ import { CoreModule } from '../core';
 import { QueueModule } from '../queue';
 import { CorosAdapter } from './adapters/coros.adapter';
 import { GarminAdapter } from './adapters/garmin.adapter';
+import { IntervalsAdapter } from './adapters/intervals.adapter';
 import { SuuntoAdapter } from './adapters/suunto.adapter';
 import { ProviderOAuthController } from './controllers/provider-oauth.controller';
 import { ProviderExportService } from './export.service';
 import {
   CorosProviderService,
   GarminProviderService,
+  IntervalsProviderService,
   PolarProviderService,
   StravaProviderService,
   SuuntoProviderService,
@@ -32,6 +34,7 @@ import { ProviderExportScheduler } from './scheduler.service';
     GarminAdapter,
     SuuntoAdapter,
     CorosAdapter,
+    IntervalsAdapter,
     ProviderExportService,
     ProviderExportScheduler,
     StravaProviderService,
@@ -39,6 +42,7 @@ import { ProviderExportScheduler } from './scheduler.service';
     SuuntoProviderService,
     CorosProviderService,
     PolarProviderService,
+    IntervalsProviderService,
   ],
   exports: [
     ProviderExportService,
@@ -47,6 +51,7 @@ import { ProviderExportScheduler } from './scheduler.service';
     SuuntoProviderService,
     CorosProviderService,
     PolarProviderService,
+    IntervalsProviderService,
   ],
 })
 export class ProvidersSyncModule {}

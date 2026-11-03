@@ -6,6 +6,7 @@ jest.mock('./adapters', () => ({
   GarminAdapter: class {},
   SuuntoAdapter: class {},
   CorosAdapter: class {},
+  IntervalsAdapter: class {},
 }));
 
 const normalized = {
@@ -38,6 +39,7 @@ function setup(existing: Record<string, unknown> | null) {
   const service = new ProviderExportService(
     prisma as never,
     garmin as never,
+    {} as never,
     {} as never,
     {} as never,
   );

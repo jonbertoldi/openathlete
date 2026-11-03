@@ -23,11 +23,11 @@ export interface OAuthTokenResponse {
   token_type?: string;
   scope?: string;
   athlete?: {
-    id: number;
-    name: string;
-    email: string;
-    profile: string;
-    profile_medium: string;
+    id: number | string;
+    name?: string;
+    email?: string;
+    profile?: string;
+    profile_medium?: string;
   };
 }
 

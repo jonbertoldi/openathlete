@@ -13,6 +13,11 @@ export const getConnectorProviderActivityLink = (
       return 'https://connect.garmin.com/modern/activity/' + externalId;
     case 'APPLE_HEALTH':
       return 'https://www.apple.com/healthcare/health-records/';
+    case 'INTERVALS':
+      return (
+        'https://intervals.icu/activities/' +
+        externalId.replace(/^intervals:/, '')
+      );
   }
   return undefined;
 };

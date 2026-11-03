@@ -13,6 +13,7 @@ const REQUIRED_ENV: Partial<
     'SUUNTO_SUBSCRIPTION_KEY',
   ],
   POLAR: ['POLAR_CLIENT_ID', 'POLAR_CLIENT_SECRET'],
+  INTERVALS: ['INTERVALS_CLIENT_ID', 'INTERVALS_CLIENT_SECRET'],
   // COROS registers a client per connection: it only needs to send users back
   COROS: ['APP_URL'],
 };

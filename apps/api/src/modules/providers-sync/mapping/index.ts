@@ -27,3 +27,4 @@ export type ProviderMapper = (
 export { mapToGarmin } from './garmin.mapper';
 export { mapToSuunto } from './suunto.mapper';
 export { mapToCoros } from './coros.mapper';
+export { mapToIntervals } from './intervals.mapper';

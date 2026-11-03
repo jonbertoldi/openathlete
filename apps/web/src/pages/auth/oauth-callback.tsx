@@ -50,7 +50,14 @@ export function OAuthCallbackPage() {
 
     const code = searchParams.get('code');
     const finalProvider = (provider || '').toUpperCase();
-    const validProviders = ['STRAVA', 'GARMIN', 'SUUNTO', 'COROS', 'POLAR'];
+    const validProviders = [
+      'STRAVA',
+      'GARMIN',
+      'SUUNTO',
+      'COROS',
+      'POLAR',
+      'INTERVALS',
+    ];
 
     const failInvalid = () => {
       const source = consumeOauthConnectSource();

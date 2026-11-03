@@ -6,12 +6,22 @@ import { Injectable, Logger } from '@nestjs/common';
 import type { NormalizedWorkout } from '@openathlete/shared';
 
 import { PrismaService } from '../prisma/services/prisma.service';
-import { CorosAdapter, GarminAdapter, SuuntoAdapter } from './adapters';
-import { mapToCoros, mapToGarmin, mapToSuunto } from './mapping';
+import {
+  CorosAdapter,
+  GarminAdapter,
+  IntervalsAdapter,
+  SuuntoAdapter,
+} from './adapters';
+import {
+  mapToCoros,
+  mapToGarmin,
+  mapToIntervals,
+  mapToSuunto,
+} from './mapping';
 import type { ProviderAdapter } from './provider-adapter.interface';
 
-type ProviderKey = 'garmin' | 'suunto' | 'coros';
-type ProviderEnum = 'GARMIN' | 'SUUNTO' | 'COROS';
+type ProviderKey = 'garmin' | 'suunto' | 'coros' | 'intervals';
+type ProviderEnum = 'GARMIN' | 'SUUNTO' | 'COROS' | 'INTERVALS';
 
 function providerKeyToEnum(provider: ProviderKey): ProviderEnum {
   switch (provider) {
@@ -21,6 +31,8 @@ function providerKeyToEnum(provider: ProviderKey): ProviderEnum {
       return 'SUUNTO';
     case 'coros':
       return 'COROS';
+    case 'intervals':
+      return 'INTERVALS';
   }
 }
 
@@ -35,11 +47,13 @@ export class ProviderExportService {
     garminAdapter: GarminAdapter,
     suuntoAdapter: SuuntoAdapter,
     corosAdapter: CorosAdapter,
+    intervalsAdapter: IntervalsAdapter,
   ) {
     this.adapters = {
       garmin: garminAdapter,
       suunto: suuntoAdapter,
       coros: corosAdapter,
+      intervals: intervalsAdapter,
     } as const;
   }
 
@@ -51,6 +65,7 @@ export class ProviderExportService {
   private mapPayload(
     provider: ProviderKey,
     date: string,
+    workoutId: number,
     normalized: NormalizedWorkout,
   ) {
     switch (provider) {
@@ -60,6 +75,8 @@ export class ProviderExportService {
         return mapToSuunto(date, normalized);
       case 'coros':
         return mapToCoros(date, normalized);
+      case 'intervals':
+        return mapToIntervals(date, workoutId, normalized);
     }
   }
 
@@ -77,7 +94,7 @@ export class ProviderExportService {
     const adapter = this.adapters[provider];
 
     const contentHash = this.computeHash(date, normalized);
-    const payload = this.mapPayload(provider, date, normalized);
+    const payload = this.mapPayload(provider, date, workoutId, normalized);
 
     const staleExports = await this.prisma.providerWorkoutExport.findMany({
       where: {

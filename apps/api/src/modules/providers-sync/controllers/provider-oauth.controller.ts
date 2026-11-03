@@ -57,7 +57,11 @@ import {
   SuuntoWebhookPayload,
 } from '../../core/types/connector';
 import { configuredProviders } from '../base/provider-config';
-import { CorosProviderService, SuuntoProviderService } from '../providers';
+import {
+  CorosProviderService,
+  IntervalsProviderService,
+  SuuntoProviderService,
+} from '../providers';
 import { GarminProviderService } from '../providers/garmin.provider.service';
 import { PolarProviderService } from '../providers/polar.provider.service';
 import { StravaProviderService } from '../providers/strava.provider.service';
@@ -78,6 +82,7 @@ export class ProviderOAuthController {
     private readonly suuntoProviderService: SuuntoProviderService,
     private readonly corosProviderService: CorosProviderService,
     private readonly polarProviderService: PolarProviderService,
+    private readonly intervalsProviderService: IntervalsProviderService,
     private readonly prisma: PrismaService,
     @Inject(forwardRef(() => QueueService))
     private readonly queueService: QueueService,
@@ -198,6 +203,8 @@ export class ProviderOAuthController {
         );
       case ConnectorProvider.POLAR:
         return { uri: this.polarProviderService.getAuthorizationUri() };
+      case ConnectorProvider.INTERVALS:
+        return { uri: this.intervalsProviderService.getAuthorizationUri() };
       default:
         throw new BadRequestException(`Provider ${provider} not supported`);
     }
@@ -344,6 +351,9 @@ export class ProviderOAuthController {
       case ConnectorProvider.POLAR: {
         return this.polarProviderService.connect(code, athlete.athleteId);
       }
+      case ConnectorProvider.INTERVALS: {
+        return this.intervalsProviderService.connect(code, athlete.athleteId);
+      }
       default:
         throw new Error(`Provider ${provider} not supported`);
     }
@@ -422,6 +432,10 @@ export class ProviderOAuthController {
 
     if (providerEnum === ConnectorProvider.POLAR) {
       await this.polarProviderService.disconnect(account);
+    }
+
+    if (providerEnum === ConnectorProvider.INTERVALS) {
+      await this.intervalsProviderService.disconnect(account);
     }
 
     // Update status to revoked instead of deleting
@@ -887,6 +901,15 @@ export class ProviderOAuthController {
     },
   ) {
     await this.stravaProviderService.handleWebhook(body);
+  }
+
+  @SkipThrottle()
+  @HttpCode(HttpStatus.OK)
+  @Post('intervals/webhook')
+  @ApiOperation({ summary: 'Intervals.icu activity webhook' })
+  async intervalsWebhook(@Body() body: unknown) {
+    await this.intervalsProviderService.handleWebhook(body as never);
+    return { success: true };
   }
 
   /**

@@ -15,6 +15,7 @@ import { ImportResult } from '../../providers-sync/base/provider-import.interfac
 import {
   CorosProviderService,
   GarminProviderService,
+  IntervalsProviderService,
   PolarProviderService,
   StravaProviderService,
   SuuntoProviderService,
@@ -41,6 +42,8 @@ export class ActivityImportProcessor extends WorkerHost {
     private readonly suuntoProviderService: SuuntoProviderService,
     @Inject(forwardRef(() => CorosProviderService))
     private readonly corosProviderService: CorosProviderService,
+    @Inject(forwardRef(() => IntervalsProviderService))
+    private readonly intervalsProviderService: IntervalsProviderService,
     private readonly queueService: QueueService,
     @Optional() private readonly emitter?: EventEmitter2,
     @Optional() private readonly analytics?: AnalyticsService,
@@ -131,6 +134,11 @@ export class ActivityImportProcessor extends WorkerHost {
         );
       } else if (account.provider === ConnectorProvider.COROS) {
         result = await this.corosProviderService.importActivity(
+          account,
+          activity,
+        );
+      } else if (account.provider === ConnectorProvider.INTERVALS) {
+        result = await this.intervalsProviderService.importActivity(
           account,
           activity,
         );

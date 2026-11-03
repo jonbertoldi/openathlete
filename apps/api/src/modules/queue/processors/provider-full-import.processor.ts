@@ -20,6 +20,7 @@ import { ProviderRateLimitError } from '../../providers-sync/errors/provider-rat
 import {
   CorosProviderService,
   GarminProviderService,
+  IntervalsProviderService,
   StravaProviderService,
   SuuntoProviderService,
 } from '../../providers-sync/providers';
@@ -49,6 +50,8 @@ export class ProviderFullImportProcessor extends WorkerHost {
     private readonly suuntoProviderService: SuuntoProviderService,
     @Inject(forwardRef(() => CorosProviderService))
     private readonly corosProviderService: CorosProviderService,
+    @Inject(forwardRef(() => IntervalsProviderService))
+    private readonly intervalsProviderService: IntervalsProviderService,
     @Optional() private readonly analytics?: AnalyticsService,
   ) {
     super();
@@ -133,6 +136,8 @@ export class ProviderFullImportProcessor extends WorkerHost {
         return this.suuntoProviderService.queueFullImport(account);
       case ConnectorProvider.COROS:
         return this.corosProviderService.queueFullImport(account);
+      case ConnectorProvider.INTERVALS:
+        return this.intervalsProviderService.queueFullImport(account);
       default:
         throw new Error(
           `Historical import is not available for ${account.provider}`,

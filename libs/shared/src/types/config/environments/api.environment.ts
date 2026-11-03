@@ -131,6 +131,28 @@ export const ApiEnvSchema = z
       .optional()
       .describe('Token for verifying Strava webhook requests (optional)'),
 
+    // Intervals.icu OAuth (optional)
+    INTERVALS_CLIENT_ID: z
+      .string()
+      .optional()
+      .describe('Intervals.icu OAuth client ID (optional)'),
+
+    INTERVALS_CLIENT_SECRET: z
+      .string()
+      .optional()
+      .describe('Intervals.icu OAuth client secret (optional)'),
+
+    INTERVALS_REDIRECT_URI: z
+      .string()
+      .url('INTERVALS_REDIRECT_URI must be a valid URL')
+      .optional()
+      .describe('Intervals.icu OAuth redirect URI (optional)'),
+
+    INTERVALS_WEBHOOK_SECRET: z
+      .string()
+      .optional()
+      .describe('Secret used to verify Intervals.icu webhooks (optional)'),
+
     // Garmin OAuth (optional)
     GARMIN_CLIENT_ID: z
       .string()

@@ -30,6 +30,7 @@ enum ConnectorProvider {
   SUUNTO
   COROS
   POLAR
+  INTERVALS
 
   @@map("connector_provider")
 }

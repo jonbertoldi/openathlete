@@ -17,6 +17,8 @@ jest.mock('../../providers-sync/providers', () => ({
   GarminProviderService: class {},
   StravaProviderService: class {},
   SuuntoProviderService: class {},
+  CorosProviderService: class {},
+  IntervalsProviderService: class {},
 }));
 
 const activeStrava = {
@@ -40,6 +42,7 @@ function setup(account: object | null = activeStrava) {
     prisma as never,
     strava as never,
     garmin as never,
+    { queueFullImport: jest.fn() } as never,
     { queueFullImport: jest.fn() } as never,
     { queueFullImport: jest.fn() } as never,
   );
