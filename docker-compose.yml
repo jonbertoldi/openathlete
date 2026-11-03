@@ -18,8 +18,6 @@
 #   docker compose -f docker-compose.yml -f docker-compose.build.yml up -d --build
 # =============================================================================
 
-x-api-image: &api-image ghcr.io/openathleteorg/openathlete-api:${OPENATHLETE_VERSION:-1}
-
 services:
   # PostgreSQL with the pgvector extension
   postgres:
@@ -57,7 +55,12 @@ services:
 
   # API, with the background jobs (device sync, processing)
   api:
-    image: *api-image
+    # This fork carries instance-specific connectors, so build its API from
+    # the checked-out source instead of pulling the published upstream image.
+    image: openathlete-api:${OPENATHLETE_VERSION:-local}
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
     ports:
       # Only for a reverse proxy on this host; browsers use APP_URL/api.
       # API_PORT=3000 publishes it on every interface (former setups).
@@ -169,8 +172,7 @@ services:
   # Web app, forwarding /api and /socket.io to the API
   web:
     # This fork carries instance-specific pages and must build its web image
-    # from the checked-out source. The API continues to use the published
-    # OpenAthlete image above.
+    # from the checked-out source.
     image: openathlete-web:${OPENATHLETE_VERSION:-local}
     build:
       context: .
