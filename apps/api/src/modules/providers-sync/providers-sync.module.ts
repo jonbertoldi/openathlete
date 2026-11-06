@@ -11,9 +11,11 @@ import { IntervalsAdapter } from './adapters/intervals.adapter';
 import { SuuntoAdapter } from './adapters/suunto.adapter';
 import { ProviderOAuthController } from './controllers/provider-oauth.controller';
 import { ProviderExportService } from './export.service';
+import { GoogleCalendarSyncScheduler } from './google-calendar-sync.scheduler';
 import {
   CorosProviderService,
   GarminProviderService,
+  GoogleCalendarProviderService,
   IntervalsProviderService,
   PolarProviderService,
   StravaProviderService,
@@ -43,6 +45,8 @@ import { ProviderExportScheduler } from './scheduler.service';
     CorosProviderService,
     PolarProviderService,
     IntervalsProviderService,
+    GoogleCalendarProviderService,
+    GoogleCalendarSyncScheduler,
   ],
   exports: [
     ProviderExportService,
@@ -52,6 +56,7 @@ import { ProviderExportScheduler } from './scheduler.service';
     CorosProviderService,
     PolarProviderService,
     IntervalsProviderService,
+    GoogleCalendarProviderService,
   ],
 })
 export class ProvidersSyncModule {}

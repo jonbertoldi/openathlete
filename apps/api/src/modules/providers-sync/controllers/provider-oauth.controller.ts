@@ -59,6 +59,7 @@ import {
 import { configuredProviders } from '../base/provider-config';
 import {
   CorosProviderService,
+  GoogleCalendarProviderService,
   IntervalsProviderService,
   SuuntoProviderService,
 } from '../providers';
@@ -68,6 +69,10 @@ import { StravaProviderService } from '../providers/strava.provider.service';
 
 function toConnectorProvider(provider: ConnectorProvider): ConnectorProvider {
   return provider as unknown as ConnectorProvider;
+}
+
+function parseProvider(value: string): ConnectorProvider {
+  return value.toUpperCase().replaceAll('-', '_') as ConnectorProvider;
 }
 
 @ApiTags('Provider')
@@ -83,6 +88,7 @@ export class ProviderOAuthController {
     private readonly corosProviderService: CorosProviderService,
     private readonly polarProviderService: PolarProviderService,
     private readonly intervalsProviderService: IntervalsProviderService,
+    private readonly googleCalendarProviderService: GoogleCalendarProviderService,
     private readonly prisma: PrismaService,
     @Inject(forwardRef(() => QueueService))
     private readonly queueService: QueueService,
@@ -129,7 +135,7 @@ export class ProviderOAuthController {
   @ApiOperation({
     summary: 'Get OAuth authorization URI for a provider',
     description:
-      'Generates the OAuth authorization URI for connecting a fitness provider account. Supported providers: STRAVA, GARMIN, SUUNTO, COROS, POLAR. Garmin and COROS use the PKCE flow: the response also holds a code verifier that the client stores and sends back during token exchange. The client should redirect the user to the returned URI to initiate the OAuth flow.',
+      'Generates the OAuth authorization URI for connecting a provider account. Supported providers: STRAVA, GARMIN, SUUNTO, COROS, POLAR, INTERVALS and GOOGLE_CALENDAR. Garmin and COROS use the PKCE flow: the response also holds a code verifier that the client stores and sends back during token exchange. The client should redirect the user to the returned URI to initiate the OAuth flow.',
   })
   @ApiParam({
     name: 'provider',
@@ -180,7 +186,7 @@ export class ProviderOAuthController {
     @Param('provider') provider: string,
     @Query('region') region?: string,
   ) {
-    const providerEnum = provider.toUpperCase() as ConnectorProvider;
+    const providerEnum = parseProvider(provider);
     this.assertConfigured(providerEnum);
 
     switch (providerEnum) {
@@ -205,6 +211,10 @@ export class ProviderOAuthController {
         return { uri: this.polarProviderService.getAuthorizationUri() };
       case ConnectorProvider.INTERVALS:
         return { uri: this.intervalsProviderService.getAuthorizationUri() };
+      case ConnectorProvider.GOOGLE_CALENDAR:
+        return {
+          uri: this.googleCalendarProviderService.getAuthorizationUri(),
+        };
       default:
         throw new BadRequestException(`Provider ${provider} not supported`);
     }
@@ -297,7 +307,7 @@ export class ProviderOAuthController {
     @Body() body: { code: string; codeVerifier?: string },
   ) {
     const { code } = body;
-    const providerEnum = provider.toUpperCase() as ConnectorProvider;
+    const providerEnum = parseProvider(provider);
 
     const athlete = await this.getAthleteForUser(user);
 
@@ -354,6 +364,12 @@ export class ProviderOAuthController {
       case ConnectorProvider.INTERVALS: {
         return this.intervalsProviderService.connect(code, athlete.athleteId);
       }
+      case ConnectorProvider.GOOGLE_CALENDAR: {
+        return this.googleCalendarProviderService.connect(
+          code,
+          athlete.athleteId,
+        );
+      }
       default:
         throw new Error(`Provider ${provider} not supported`);
     }
@@ -368,7 +384,7 @@ export class ProviderOAuthController {
   @ApiOperation({
     summary: 'Disconnect provider account',
     description:
-      "Disconnects a connected provider account by revoking access and marking the account as revoked. For Garmin, calls the deleteUserRegistration API before revoking. For Suunto, calls the deauthorize API before revoking. The provider account status is updated to 'revoked' instead of being deleted, preserving historical data.",
+      "Disconnects a connected provider account by revoking access and marking the account as revoked. Garmin deregisters the user, Suunto deauthorizes, and Google Calendar removes its dedicated calendar before revoking. The provider account status is updated to 'revoked' instead of being deleted, preserving historical data.",
   })
   @ApiParam({
     name: 'provider',
@@ -403,7 +419,7 @@ export class ProviderOAuthController {
     @JwtUser() user: AuthUser,
     @Param('provider') provider: string,
   ) {
-    const providerEnum = provider.toUpperCase() as ConnectorProvider;
+    const providerEnum = parseProvider(provider);
 
     const { account } = await this.getProviderAccountForUser(
       user,
@@ -436,6 +452,10 @@ export class ProviderOAuthController {
 
     if (providerEnum === ConnectorProvider.INTERVALS) {
       await this.intervalsProviderService.disconnect(account);
+    }
+
+    if (providerEnum === ConnectorProvider.GOOGLE_CALENDAR) {
+      await this.googleCalendarProviderService.disconnect(account);
     }
 
     // Update status to revoked instead of deleting
@@ -623,7 +643,7 @@ export class ProviderOAuthController {
     @Body(new ZodValidationPipe(providerPreferencesSchema))
     body: ProviderPreferencesDto,
   ) {
-    const providerEnum = provider.toUpperCase() as ConnectorProvider;
+    const providerEnum = parseProvider(provider);
     const { account } = await this.getProviderAccountForUser(
       user,
       providerEnum,
@@ -743,7 +763,7 @@ export class ProviderOAuthController {
     @JwtUser() user: AuthUser,
     @Param('provider') provider: string,
   ) {
-    const providerEnum = provider.toUpperCase() as ConnectorProvider;
+    const providerEnum = parseProvider(provider);
     const { account } = await this.getProviderAccountForUser(
       user,
       providerEnum,

@@ -14,6 +14,10 @@ const REQUIRED_ENV: Partial<
   ],
   POLAR: ['POLAR_CLIENT_ID', 'POLAR_CLIENT_SECRET'],
   INTERVALS: ['INTERVALS_CLIENT_ID', 'INTERVALS_CLIENT_SECRET'],
+  GOOGLE_CALENDAR: [
+    'GOOGLE_CALENDAR_CLIENT_ID',
+    'GOOGLE_CALENDAR_CLIENT_SECRET',
+  ],
   // COROS registers a client per connection: it only needs to send users back
   COROS: ['APP_URL'],
 };

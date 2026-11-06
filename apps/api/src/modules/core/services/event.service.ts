@@ -44,6 +44,7 @@ import {
 import {
   ActivityFeedbackCompletedEvent,
   ActivityImportedEvent,
+  CalendarEventChangedEvent,
   WorkoutPlannedChangedEvent,
 } from 'src/events';
 import { CaslAbilityFactory } from 'src/modules/auth';
@@ -577,6 +578,7 @@ export class EventService {
           deliveryKey: `import:${created.eventId}`,
         }),
       );
+    this.emitCalendarEventChanged(created.eventId, finalAthleteId, 'upsert');
     return this.getEventById(user, created.eventId);
   }
 
@@ -791,6 +793,17 @@ export class EventService {
         startDate: eventDate,
         sport,
       }),
+    );
+  }
+
+  emitCalendarEventChanged(
+    eventId: number,
+    athleteId: number,
+    action: 'upsert' | 'delete',
+  ) {
+    this.eventEmitter.emit(
+      CalendarEventChangedEvent.SLUG,
+      new CalendarEventChangedEvent({ eventId, athleteId, action }),
     );
   }
 
@@ -1182,6 +1195,10 @@ export class EventService {
         changed('COMMENT');
     }
 
+    if (!isTemplate && event.athleteId && event.type !== EventType.ACTIVITY) {
+      this.emitCalendarEventChanged(eventId, event.athleteId, 'upsert');
+    }
+
     // Return the full updated event with all includes
     return this.getEventById(user, eventId);
   }
@@ -1256,6 +1273,9 @@ export class EventService {
         eventId,
         reason: 'event_deleted',
       });
+      if (event.type !== EventType.ACTIVITY) {
+        this.emitCalendarEventChanged(eventId, event.athleteId, 'delete');
+      }
     }
 
     return deletedEvent;
@@ -1650,6 +1670,14 @@ export class EventService {
           eventId: duplicatedEvent.eventId,
           reason: 'event_updated',
         },
+      );
+    }
+
+    if (originalEvent.type !== EventType.ACTIVITY && originalEvent.athleteId) {
+      this.emitCalendarEventChanged(
+        duplicatedEvent.eventId,
+        originalEvent.athleteId,
+        'upsert',
       );
     }
 

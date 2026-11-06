@@ -31,6 +31,7 @@ enum ConnectorProvider {
   COROS
   POLAR
   INTERVALS
+  GOOGLE_CALENDAR
 
   @@map("connector_provider")
 }

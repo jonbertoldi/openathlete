@@ -22,7 +22,7 @@ export function OAuthCallbackPage() {
   const setOAuthTokenMutation = useSetOAuthTokenMutation({
     onSuccess: () => {
       const source = consumeOauthConnectSource();
-      const finalProvider = (provider || '').toUpperCase();
+      const finalProvider = (provider || '').toUpperCase().replaceAll('-', '_');
       posthog.capture(AnalyticsEvent.provider_connect_completed, {
         provider: finalProvider,
         source,
@@ -32,7 +32,7 @@ export function OAuthCallbackPage() {
     },
     onError: (error) => {
       const source = consumeOauthConnectSource();
-      const finalProvider = (provider || '').toUpperCase();
+      const finalProvider = (provider || '').toUpperCase().replaceAll('-', '_');
       posthog.capture(AnalyticsEvent.provider_connect_failed, {
         provider: finalProvider,
         source,
@@ -49,7 +49,7 @@ export function OAuthCallbackPage() {
     hasInitialized.current = true;
 
     const code = searchParams.get('code');
-    const finalProvider = (provider || '').toUpperCase();
+    const finalProvider = (provider || '').toUpperCase().replaceAll('-', '_');
     const validProviders = [
       'STRAVA',
       'GARMIN',
@@ -57,6 +57,7 @@ export function OAuthCallbackPage() {
       'COROS',
       'POLAR',
       'INTERVALS',
+      'GOOGLE_CALENDAR',
     ];
 
     const failInvalid = () => {

@@ -23,7 +23,7 @@ import {
 } from '@/utils/analytics-events';
 import { connectorProviderLabelMap } from '@/utils/label-map/core/connector-provider.label-map';
 import { openOAuthUrl } from '@/utils/oauth';
-import { CheckCircle2, Link2, Link2Off } from 'lucide-react';
+import { CalendarDays, CheckCircle2, Link2, Link2Off } from 'lucide-react';
 import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -49,6 +49,7 @@ const DEFAULT_SUPPORTED_PROVIDERS: ConnectorProvider[] = [
   'POLAR',
   'COROS',
   'INTERVALS',
+  'GOOGLE_CALENDAR',
 ];
 
 export function ConnectorsList({
@@ -139,6 +140,8 @@ export function ConnectorsList({
         return <SuuntoLogo className="h-6 w-auto" />;
       case 'COROS':
         return <CorosLogo className="h-6 w-auto" />;
+      case 'GOOGLE_CALENDAR':
+        return <CalendarDays className="h-6 w-6 text-blue-600" />;
       default:
         return <Link2 className="h-5 w-5" />;
     }

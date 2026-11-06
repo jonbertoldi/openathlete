@@ -7,13 +7,14 @@ import { AccountDeletingEvent } from 'src/events';
 import { PrismaService } from 'src/modules/prisma/services/prisma.service';
 import {
   GarminProviderService,
+  GoogleCalendarProviderService,
   PolarProviderService,
 } from 'src/modules/providers-sync/providers';
 
 /**
- * Garmin requires partners to delete the user's registration when the user
- * deletes their account; otherwise it keeps sending their data. Polar keeps
- * collecting it for us the same way until told otherwise.
+ * Garmin and Polar must stop sending data when the user deletes their
+ * account. Google Calendar must remove its dedicated calendar and consent
+ * before the local credentials disappear.
  */
 @Injectable()
 export class ProviderDeregistrationListener {
@@ -23,6 +24,7 @@ export class ProviderDeregistrationListener {
     private readonly prisma: PrismaService,
     private readonly garminProviderService: GarminProviderService,
     private readonly polarProviderService: PolarProviderService,
+    private readonly googleCalendarProviderService: GoogleCalendarProviderService,
   ) {}
 
   @OnEvent(AccountDeletingEvent.SLUG)
@@ -52,6 +54,20 @@ export class ProviderDeregistrationListener {
     for (const account of polarAccounts) {
       // Its failures are logged there and never block
       await this.polarProviderService.disconnect(account);
+    }
+
+    const googleAccounts = await this.prisma.providerAccount.findMany({
+      where: { athleteId, provider: ConnectorProvider.GOOGLE_CALENDAR },
+    });
+    for (const account of googleAccounts) {
+      // Remove mirrored events and revoke consent before the local account goes.
+      await this.googleCalendarProviderService
+        .disconnect(account)
+        .catch((error) => {
+          this.logger.error(
+            `Failed to disconnect Google Calendar account ${account.providerAccountId}: ${error instanceof Error ? error.message : String(error)}`,
+          );
+        });
     }
   }
 }

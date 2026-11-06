@@ -12,6 +12,7 @@ import {
   ActivityFeedbackListener,
   ActivityPushNotificationListener,
   ActivitySummaryListener,
+  GoogleCalendarSyncListener,
   NotificationListener,
   ProviderDeregistrationListener,
   TrainingLoadListener,
@@ -90,6 +91,7 @@ import { SubscriptionModule } from './subscription';
     ActivityFeedbackExtractionListener,
     ProviderDeregistrationListener,
     WorkoutSyncListener,
+    GoogleCalendarSyncListener,
   ],
 })
 export class AppModule {}

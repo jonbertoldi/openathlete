@@ -9,4 +9,5 @@ export const connectorProviderLabelMap: Record<ConnectorProvider, string> = {
   COROS: 'COROS',
   POLAR: 'Polar',
   INTERVALS: 'Intervals.icu',
+  GOOGLE_CALENDAR: 'Google Calendar',
 };

@@ -102,6 +102,11 @@ export class EventBulkService {
     for (const event of events) {
       if (!event.athleteId) continue;
       athletes.add(event.athleteId);
+      this.eventService.emitCalendarEventChanged(
+        event.eventId,
+        event.athleteId,
+        'upsert',
+      );
       if (event.training?.workout) {
         this.eventService.emitWorkoutPlannedChanged(
           event.eventId,
