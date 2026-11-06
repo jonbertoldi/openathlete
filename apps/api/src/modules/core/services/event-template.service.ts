@@ -64,7 +64,6 @@ export class EventTemplateService {
         },
       },
     });
-
     if (event.type === 'TRAINING') {
       await this.prisma.eventTraining.update({
         where: {
@@ -429,6 +428,12 @@ export class EventTemplateService {
         isFuture,
       );
     }
+
+    this.eventService.emitCalendarEventChanged(
+      newEvent.eventId,
+      athleteId,
+      'upsert',
+    );
 
     // Return the complete event
     return this.eventService.getEventById(user, newEvent.eventId);

@@ -17,9 +17,21 @@ describe('configured providers', () => {
           SUUNTO_CLIENT_ID: 'id',
           SUUNTO_CLIENT_SECRET: 'secret',
           GARMIN_CLIENT_ID: 'id',
+          GOOGLE_CALENDAR_CLIENT_ID: 'id',
         }),
       ),
     ).toEqual(['STRAVA']);
+  });
+
+  it('offers Google Calendar once both OAuth credentials are set', () => {
+    expect(
+      configuredProviders(
+        env({
+          GOOGLE_CALENDAR_CLIENT_ID: 'id',
+          GOOGLE_CALENDAR_CLIENT_SECRET: 'secret',
+        }),
+      ),
+    ).toEqual(['GOOGLE_CALENDAR']);
   });
 
   it('offers COROS, which needs no credentials, once it can come back', () => {

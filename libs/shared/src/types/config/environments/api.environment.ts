@@ -153,6 +153,23 @@ export const ApiEnvSchema = z
       .optional()
       .describe('Secret used to verify Intervals.icu webhooks (optional)'),
 
+    // Google Calendar OAuth (optional)
+    GOOGLE_CALENDAR_CLIENT_ID: z
+      .string()
+      .optional()
+      .describe('Google Calendar OAuth client ID (optional)'),
+
+    GOOGLE_CALENDAR_CLIENT_SECRET: z
+      .string()
+      .optional()
+      .describe('Google Calendar OAuth client secret (optional)'),
+
+    GOOGLE_CALENDAR_REDIRECT_URI: z
+      .string()
+      .url('GOOGLE_CALENDAR_REDIRECT_URI must be a valid URL')
+      .optional()
+      .describe('Google Calendar OAuth redirect URI (optional)'),
+
     // Garmin OAuth (optional)
     GARMIN_CLIENT_ID: z
       .string()

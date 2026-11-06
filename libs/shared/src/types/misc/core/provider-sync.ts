@@ -67,6 +67,12 @@ const providerSpecificCapabilities: Partial<
     importMetrics: false,
     supportsFullImport: true,
   },
+  GOOGLE_CALENDAR: {
+    importActivities: false,
+    exportWorkouts: false,
+    importMetrics: false,
+    supportsFullImport: false,
+  },
 };
 
 /** COROS keeps each account in one region, each with its own server */

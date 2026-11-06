@@ -11,10 +11,14 @@ import {
 
 import { AuthUser } from '../../auth/decorators/user.decorator';
 import { PrismaService } from '../../prisma/services/prisma.service';
+import { EventService } from './event.service';
 
 @Injectable()
 export class TrainingPlanService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly eventService: EventService,
+  ) {}
 
   async importSeoPlan(
     user: AuthUser,
@@ -207,6 +211,12 @@ export class TrainingPlanService {
               });
             }
           }
+
+          this.eventService.emitCalendarEventChanged(
+            createdEvent.eventId,
+            athleteId,
+            'upsert',
+          );
         }
 
         weekIndex++;
